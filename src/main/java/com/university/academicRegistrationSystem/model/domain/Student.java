@@ -1,25 +1,44 @@
-package com.university.academicRegistrationSystem.domain;
+package com.university.academicRegistrationSystem.model.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank
     private String firstName;
+    @NotBlank
     private String lastName;
+    @NotBlank
+    private String program;
+    @Size(max=5)
     private Double average;
 
-    public Student(String firstName, String lastName) {
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_name")
+    private Set<Subject> subjects = new HashSet<>();
+
+    public Student(Long id, String firstName, String lastName, String program) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.program = program;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -38,6 +57,14 @@ public class Student {
         this.lastName = lastName;
     }
 
+    public String getProgram() {
+        return program;
+    }
+
+    public void setProgram(String program) {
+        this.program = program;
+    }
+
     public Double getAverage() {
         return average;
     }
@@ -52,6 +79,7 @@ public class Student {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", program='" + program + '\'' +
                 ", average=" + average +
                 '}';
     }
