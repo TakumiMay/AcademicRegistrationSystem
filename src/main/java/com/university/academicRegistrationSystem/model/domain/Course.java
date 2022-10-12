@@ -2,9 +2,8 @@ package com.university.academicRegistrationSystem.model.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 public class Course {
@@ -12,16 +11,19 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Course name is mandatory")
     private String courseName;
     private String[] programs;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_name")
-    private Set<Subject> subjects = new HashSet<>();
+    @OneToMany(mappedBy = "course", cascade= CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Subject> subjects;
 
-    public Course(String courseName) {
+    public Course(){}
+
+    public Course(Long id, String courseName, String[] programs) {
+        this.id = id;
         this.courseName = courseName;
+        this.programs = programs;
     }
 
     public Long getId() {
@@ -48,11 +50,11 @@ public class Course {
         this.programs = programs;
     }
 
-    public Set<Subject> getSubjects() {
+    public List<Subject> getSubjects() {
         return subjects;
     }
 
-    public void setSubjects(Set<Subject> subjects) {
+    public void setSubjects(List<Subject> subjects) {
         this.subjects = subjects;
     }
 

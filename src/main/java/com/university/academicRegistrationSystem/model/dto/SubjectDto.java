@@ -1,5 +1,8 @@
 package com.university.academicRegistrationSystem.model.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SubjectDto {
 
     private Long id;
@@ -7,9 +10,17 @@ public class SubjectDto {
     private String schedule;
     private String professor;
     private int credits;
-    private String course;
+    private Long course;
+    private List<StudentDto> students;
 
-    public SubjectDto() {
+    public SubjectDto(Long id, String name, String schedule, String professor, int credits, Long course) {
+        this.id = id;
+        this.name = name;
+        this.schedule = schedule;
+        this.professor = professor;
+        this.credits = credits;
+        this.course = course;
+        this.students = new ArrayList<>();
     }
 
     public Long getId() {
@@ -52,12 +63,20 @@ public class SubjectDto {
         this.credits = credits;
     }
 
-    public String getCourse() {
+    public Long getCourse() {
         return course;
     }
 
-    public void setCourse(String course) {
+    public void setCourse(Long course) {
         this.course = course;
+    }
+
+    public List<StudentDto> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<StudentDto> students) {
+        this.students = students;
     }
 
 }

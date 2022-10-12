@@ -1,36 +1,41 @@
 package com.university.academicRegistrationSystem.model.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 public class Student {
 
     @Id
+    @NotBlank(message = "Id is mandatory")
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "First name is mandatory")
     private String firstName;
-    @NotBlank
+    @NotBlank(message = "Last name is mandatory")
     private String lastName;
-    @NotBlank
+    @NotBlank(message = "Program name is mandatory")
     private String program;
-    @Size(max=5)
+    @Min(0)
+    @Max(5)
     private Double average;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_name")
-    private Set<Subject> subjects = new HashSet<>();
+    @JoinColumn(name = "name")
+    private List<Subject> subjects;
 
-    public Student(Long id, String firstName, String lastName, String program) {
+    public Student(){}
+
+    public Student(Long id, String firstName, String lastName, String program, Double average) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.program = program;
+        this.average = average;
     }
 
     public Long getId() {
@@ -71,6 +76,14 @@ public class Student {
 
     public void setAverage(Double average) {
         this.average = average;
+    }
+
+    public List<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<Subject> subjects) {
+        this.subjects = subjects;
     }
 
     @Override

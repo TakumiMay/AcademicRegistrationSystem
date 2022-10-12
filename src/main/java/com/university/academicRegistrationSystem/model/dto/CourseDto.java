@@ -1,13 +1,14 @@
 package com.university.academicRegistrationSystem.model.dto;
 
+
+import java.util.List;
+
 public class CourseDto {
 
     private Long id;
     private String courseName;
     private String[] programs;
-
-    public CourseDto(){
-    }
+    private List<SubjectDto> subjects;
 
     public CourseDto(Long id, String courseName, String[] programs) {
         this.id = id;
@@ -37,6 +38,14 @@ public class CourseDto {
 
     public void setPrograms(String[] programs) {
         this.programs = programs;
+    }
+
+    public List<SubjectDto> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<SubjectDto> subjects) {
+        this.subjects = subjects;
     }
 
 }

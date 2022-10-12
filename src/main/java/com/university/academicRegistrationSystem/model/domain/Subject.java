@@ -1,11 +1,12 @@
 package com.university.academicRegistrationSystem.model.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 public class Subject {
@@ -13,24 +14,30 @@ public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Subject name is mandatory")
     private String name;
     private String schedule;
 
     private String professor;
-    @Size(max=10)
+    @Min(0)
+    @Max(10)
     private int credits;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "subject_name")
+    @ManyToOne(cascade= CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Course.class)
+    @JoinColumn(name = "course_name", nullable = false, updatable = false, insertable = true)
     private Course course;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_name")
-    private Set<Student> students = new HashSet<>();
+    @JoinColumn(name = "first_name")
+    private List<Student> students;
 
-    public Subject(String name, int credits) {
+    public Subject(){}
+
+    public Subject(Long id, String name, String schedule, String professor, int credits) {
+        this.id = id;
         this.name = name;
+        this.schedule = schedule;
+        this.professor = professor;
         this.credits = credits;
     }
 
@@ -82,11 +89,11 @@ public class Subject {
         this.course = course;
     }
 
-    public Set<Student> getStudents() {
+    public List<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(Set<Student> students) {
+    public void setStudents(List<Student> students) {
         this.students = students;
     }
 

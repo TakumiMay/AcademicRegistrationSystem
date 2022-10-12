@@ -7,9 +7,7 @@ import com.university.academicRegistrationSystem.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,8 +17,20 @@ public class StudentServiceImpl implements StudentService {
     private StudentRepository studentRepository;
 
     @Override
+    public StudentDto addStudent(StudentDto studentDto) {
+        Student student = StudentMapper.toBO(studentDto);
+        student.getSubjects().forEach(subject -> subject.getStudents().add(student));
+        return StudentMapper.toDto(studentRepository.save(student));
+    }
+
+    @Override
     public List<StudentDto> getAll() {
         return studentRepository.findAll().stream().map(StudentMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public StudentDto getStudentById(Long id) {
+        return studentRepository.findById(id).map(StudentMapper::toDto).get();
     }
 
 }
