@@ -11,7 +11,7 @@ import java.util.Objects;
 public class Student {
 
     @Id
-    @NotBlank(message = "Id is mandatory")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "First name is mandatory")

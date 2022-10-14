@@ -23,8 +23,8 @@ public class Subject {
     @Max(10)
     private int credits;
 
-    @ManyToOne(cascade= CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Course.class)
-    @JoinColumn(name = "course_name", nullable = false, updatable = false, insertable = true)
+    @ManyToOne(fetch = FetchType.EAGER, targetEntity = Course.class)
+    @JoinColumn(name = "course_id", nullable = false, updatable = false, insertable = true)
     private Course course;
 
     @ManyToMany(fetch = FetchType.LAZY)

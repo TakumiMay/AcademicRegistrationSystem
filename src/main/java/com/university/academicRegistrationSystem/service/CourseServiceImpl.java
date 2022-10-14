@@ -3,6 +3,7 @@ package com.university.academicRegistrationSystem.service;
 import com.university.academicRegistrationSystem.model.domain.Course;
 import com.university.academicRegistrationSystem.model.dto.CourseDto;
 import com.university.academicRegistrationSystem.model.mapper.CourseMapper;
+import com.university.academicRegistrationSystem.model.mapper.SubjectMapper;
 import com.university.academicRegistrationSystem.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDto addCourse(CourseDto courseDto) {
         Course course = CourseMapper.toBO(courseDto);
+        course.setSubjects( courseDto.getSubjects().stream().map(SubjectMapper::toBO).collect(Collectors.toList()) );
         course.getSubjects().forEach(subject -> subject.setCourse(course));
         return CourseMapper.toDto(courseRepository.save(course));
     }
@@ -32,10 +34,27 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Optional<CourseDto> getCourseById(Long id) {
         Optional<Course> optionalCourse = courseRepository.findById(id);
-        System.out.println("HOOLIII   "+optionalCourse.toString());
         if(optionalCourse.isPresent())
             return optionalCourse.map(CourseMapper::toDto);
-        return Optional.ofNullable(null);
+        return Optional.empty();
+    }
+
+    @Override //TO DO
+    public Optional<CourseDto> editCourse(Long id, CourseDto courseDto){
+        Optional<Course> optionalCourse = courseRepository.findById(id);
+        if(optionalCourse.isPresent())
+            return Optional.of(CourseMapper.toDto( courseRepository.save(CourseMapper.toBO(courseDto)) ));
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean deleteCourse(Long id) {
+        Optional<Course> optionalCourse = courseRepository.findById(id);
+        if(optionalCourse.isPresent()) {
+            courseRepository.delete(optionalCourse.get());
+            return true;
+        }
+        return false;
     }
 
 }

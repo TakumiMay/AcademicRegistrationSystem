@@ -10,17 +10,15 @@ public class SubjectDto {
     private String schedule;
     private String professor;
     private int credits;
-    private Long course;
-    private List<StudentDto> students;
+    private CourseDto course;
+    private List<StudentDto> students = new ArrayList<>();
 
-    public SubjectDto(Long id, String name, String schedule, String professor, int credits, Long course) {
+    public SubjectDto(Long id, String name, String schedule, String professor, int credits) {
         this.id = id;
         this.name = name;
         this.schedule = schedule;
         this.professor = professor;
         this.credits = credits;
-        this.course = course;
-        this.students = new ArrayList<>();
     }
 
     public Long getId() {
@@ -63,11 +61,11 @@ public class SubjectDto {
         this.credits = credits;
     }
 
-    public Long getCourse() {
+    public CourseDto getCourse() {
         return course;
     }
 
-    public void setCourse(Long course) {
+    public void setCourse(CourseDto course) {
         this.course = course;
     }
 

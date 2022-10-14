@@ -9,4 +9,6 @@ public interface CourseService {
     CourseDto addCourse(CourseDto courseDto);
     List<CourseDto> getAll();
     Optional<CourseDto> getCourseById(Long id);
+    Optional<CourseDto> editCourse(Long id, CourseDto courseDto);
+    boolean deleteCourse(Long id);
 }

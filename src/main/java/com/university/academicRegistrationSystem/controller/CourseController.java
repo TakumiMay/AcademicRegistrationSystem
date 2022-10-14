@@ -20,9 +20,8 @@ public class CourseController {
 
     @PostMapping("/create")
     @Operation(summary ="Add a new course")
-    public ResponseEntity<CourseDto> addCourse(@Valid @RequestBody CourseDto courseDto) {
-        ResponseEntity<CourseDto> response = new ResponseEntity<CourseDto>(courseService.addCourse(courseDto), HttpStatus.OK);
-        return response;
+    public ResponseEntity<CourseDto> createCourse(@Valid @RequestBody CourseDto courseDto) {
+        return new ResponseEntity<CourseDto>(courseService.addCourse(courseDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/all")
@@ -32,11 +31,22 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary ="Obtain a course given its id")
     public ResponseEntity<CourseDto> getCourse(@PathVariable("id") Long id) {
         return courseService.getCourseById(id).map(courseDto -> new ResponseEntity<>(courseDto, HttpStatus.OK)).
                 orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @PutMapping("/{id}")//TO DO
+    public ResponseEntity<CourseDto> editCourse(@PathVariable("id") Long id, @Valid @RequestBody CourseDto courseDto) {
+        return courseService.editCourse(id, courseDto).map(cDto -> new ResponseEntity<>(cDto, HttpStatus.ACCEPTED)).
+                orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
+    @DeleteMapping("/{id}")
+    @Operation(summary ="Delete a course given its id")
+    public ResponseEntity<String> deleteCourse(@PathVariable("id") Long id) {
+        return (courseService.deleteCourse(id))?ResponseEntity.ok("Course "+ id +" deleted successfully."):new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
 }

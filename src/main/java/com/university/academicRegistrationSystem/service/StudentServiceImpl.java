@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,8 +30,20 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDto getStudentById(Long id) {
-        return studentRepository.findById(id).map(StudentMapper::toDto).get();
+    public Optional<StudentDto> getStudentById(Long stuId) {
+        return studentRepository.findById(stuId).map(StudentMapper::toDto);
+    }
+
+    @Override
+    public Optional<StudentDto> editStudent(Long stuId) {
+        //TO DO
+        return null;
+    }
+
+    @Override
+    public Optional<StudentDto> deleteStudent(Long stuId) {
+        //TO DO
+        return null;
     }
 
 }

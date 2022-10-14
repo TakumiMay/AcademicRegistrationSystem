@@ -12,16 +12,15 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping(value = "/students")
 public class StudentController {
 
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     public ResponseEntity<StudentDto> addStudent(@Valid @RequestBody StudentDto studentDto){
-        ResponseEntity<StudentDto> response = new ResponseEntity<StudentDto>(studentService.addStudent(studentDto), HttpStatus.OK);
-        return response;
+        return new ResponseEntity<StudentDto>(studentService.addStudent(studentDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/all")
@@ -30,9 +29,22 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getAll());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<StudentDto> getStudent(Long id) {
-        return ResponseEntity.ok(studentService.getStudentById(id));
+    @GetMapping("/{stuId}")
+    public ResponseEntity<StudentDto> getStudent(@PathVariable("stuId") Long stuId) {
+        return studentService.getStudentById(stuId).map(studentDto -> new ResponseEntity<>(studentDto, HttpStatus.OK)).
+                orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/{stuId}")
+    public ResponseEntity<StudentDto> editStudent(@PathVariable("stuId") Long stuId, @Valid @RequestBody StudentDto studentDto) {
+        return studentService.editStudent(stuId).map(stuDto -> new ResponseEntity<>(stuDto, HttpStatus.ACCEPTED)).
+                orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/{stuId}")
+    public ResponseEntity<StudentDto> deleteStudent(@PathVariable("stuId") Long stuId) {
+        return studentService.deleteStudent(stuId).map(studentDto -> new ResponseEntity<>(studentDto, HttpStatus.OK)).
+                orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 }
