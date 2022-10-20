@@ -19,31 +19,35 @@ public class SubjectController {
     private SubjectService subjectService;
 
     @PostMapping("/create")
+    @Operation(summary = "Add a new subject to a course")
     public ResponseEntity<SubjectDto> addSubject(@PathVariable("id") Long id, @Valid @RequestBody SubjectDto subjectDto) {
         return subjectService.addSubject(id, subjectDto).map(subDto -> new ResponseEntity<>(subDto, HttpStatus.CREATED)).
                 orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/all")
-    @Operation(summary ="Obtain all the subjects of a course")
+    @Operation(summary = "Obtain all the subjects of a course its id")
     public ResponseEntity<List<SubjectDto>> getAllByCourse(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(subjectService.getAllByCourse(id));
+        return subjectService.getAllByCourse(id).map(subjectDto -> new ResponseEntity<>(subjectDto, HttpStatus.OK)).
+                orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{subId}")
-    @Operation(summary ="Obtain a subject of a course given its id")
+    @Operation(summary = "Obtain a subject of a course given the ids")
     public ResponseEntity<SubjectDto> getSubject(@PathVariable("id") Long id, @PathVariable("subId") Long subId) {
         return subjectService.getSubjectById(id, subId).map(subjectDto -> new ResponseEntity<>(subjectDto, HttpStatus.OK)).
                 orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{subId}")
-    public ResponseEntity<SubjectDto> editSubject(@PathVariable("id") Long id, @Valid @RequestBody SubjectDto subjectDto) {
-        return subjectService.editSubject(id, subjectDto).map(sDto -> new ResponseEntity<>(sDto, HttpStatus.ACCEPTED)).
+    @Operation(summary = "Edit a subject of a course given the ids and data")
+    public ResponseEntity<SubjectDto> editSubject(@PathVariable("id") Long id, @PathVariable("subId") Long subId, @Valid @RequestBody SubjectDto subjectDto) {
+        return subjectService.editSubject(id, subId, subjectDto).map(sDto -> new ResponseEntity<>(sDto, HttpStatus.ACCEPTED)).
                 orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{subId}")
+    @Operation(summary = "Delete a subject of a course given the ids")
     public ResponseEntity<String> deleteSubject(@PathVariable("id") Long id, @PathVariable("subId") Long subId) {
         return (subjectService.deleteSubject(id, subId))?ResponseEntity.ok("Subject "+ subId +" from Course "+ id +" deleted successfully."):new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

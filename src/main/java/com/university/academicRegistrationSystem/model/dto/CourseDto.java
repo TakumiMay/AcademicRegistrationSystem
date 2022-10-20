@@ -1,6 +1,7 @@
 package com.university.academicRegistrationSystem.model.dto;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CourseDto {
@@ -8,7 +9,7 @@ public class CourseDto {
     private Long id;
     private String courseName;
     private String[] programs;
-    private List<SubjectDto> subjects;
+    private List<SubjectDto> subjects = new ArrayList<>();
 
     public CourseDto(Long id, String courseName, String[] programs) {
         this.id = id;

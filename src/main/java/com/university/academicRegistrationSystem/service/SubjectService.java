@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface SubjectService {
     Optional<SubjectDto> addSubject(Long id, SubjectDto subjectDto);
-    List<SubjectDto> getAllByCourse(Long id);
+    Optional<List<SubjectDto>> getAllByCourse(Long id);
     Optional<SubjectDto> getSubjectById(Long id, Long subId);
-    Optional<SubjectDto> editSubject(Long id, SubjectDto subjectDto);
+    Optional<SubjectDto> editSubject(Long id, Long subId, SubjectDto subjectDto);
     boolean deleteSubject(Long id, Long subId);
 }

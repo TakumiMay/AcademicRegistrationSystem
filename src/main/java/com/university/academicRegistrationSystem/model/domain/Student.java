@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ public class Student {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "name")
-    private List<Subject> subjects;
+    private List<Subject> subjects = new ArrayList<>();
 
     public Student(){}
 

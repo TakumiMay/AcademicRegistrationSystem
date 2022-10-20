@@ -20,7 +20,9 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDto addStudent(StudentDto studentDto) {
         Student student = StudentMapper.toBO(studentDto);
-        student.getSubjects().forEach(subject -> subject.getStudents().add(student));
+        if(!studentDto.getSubjects().isEmpty()) {
+            student.getSubjects().forEach(subject -> subject.getStudents().add(student));
+        }
         return StudentMapper.toDto(studentRepository.save(student));
     }
 
@@ -31,19 +33,28 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Optional<StudentDto> getStudentById(Long stuId) {
-        return studentRepository.findById(stuId).map(StudentMapper::toDto);
+        Optional<Student> optionalStudent = studentRepository.findById(stuId);
+        if (optionalStudent.isPresent())
+            return optionalStudent.map(StudentMapper::toDto);
+        return Optional.empty();
     }
 
     @Override
-    public Optional<StudentDto> editStudent(Long stuId) {
-        //TO DO
-        return null;
+    public Optional<StudentDto> editStudent(Long stuId, StudentDto studentDto) {
+        Optional<Student> optionalStudent = studentRepository.findById(stuId);
+        if (optionalStudent.isPresent())
+            return Optional.of(StudentMapper.toDto(studentRepository.save(StudentMapper.toBO(studentDto))));
+        return Optional.empty();
     }
 
     @Override
-    public Optional<StudentDto> deleteStudent(Long stuId) {
-        //TO DO
-        return null;
+    public boolean deleteStudent(Long stuId) {
+        Optional<Student> optionalStudent = studentRepository.findById(stuId);
+        if (optionalStudent.isPresent()) {
+            studentRepository.delete(optionalStudent.get());
+            return true;
+        }
+        return false;
     }
 
 }

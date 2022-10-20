@@ -1,0 +1,477 @@
+openapi: 3.0.3
+info:
+  title: University Registration API
+  description: This API manages registration Operations
+  contact:
+    email: mayumi.tamurah@perficient.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+tags:
+  - name: Course
+    description: This endpoint manages the university courses
+  - name: Subject
+    description: This endpoint manages the courses subjects
+  - name: Student
+    description: This endpoint manages the students operations
+  - name: Enrollment
+    description: This endpoint manages the students enrollment operation
+paths:
+  /courses/create:
+    post:
+      tags:
+        - Course
+      summary: Add a new course
+      description: Add a new course to the university DB
+      operationId: createCourse
+      requestBody:
+        description: Add a new course with subjects to the university DB
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseBody'
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseBody'
+  /courses/all:
+    get:
+      tags:
+        - Course
+      summary: Finds all courses
+      operationId: getAll
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseBody'
+  /courses/{courseId}:
+    get:
+      tags:
+        - Course
+      summary: Finds a course by Id
+      operationId: getCourse
+      parameters:
+        - name: courseId
+          in: path
+          description: ID of the course to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/CourseBody'
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Course
+      summary: Update an existing course
+      description: Update an existing course by Id
+      operationId: editCourse
+      parameters:
+        - name: courseId
+          in: path
+          description: ID of the course to edit
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseBody'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseBody'
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Course
+      summary: Deletes a course
+      description: Course {id} deleted successfully
+      operationId: deleteCourse
+      parameters:
+        - name: courseId
+          in: path
+          description: ID of the course to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Not Found
+  /courses/{id}/subjects/create:
+    post:
+      tags:
+        - Subject
+      summary: Add a new subject
+      description: Add a new subject for a course
+      operationId: addSubject
+      parameters:
+        - name: id
+          in: path
+          description: ID of the course of the subject to add
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Add a new subject to a course in the university DB
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectBody'
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectBody'
+        '404':
+          description: Not Found
+  /courses/{id}/subjects/all:
+    get:
+      tags:
+        - Subject
+      summary: Finds all subjects of a course
+      operationId: getAllByCourse
+      parameters:
+        - name: id
+          in: path
+          description: ID of the course of the subjects to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectBody'
+        '404':
+          description: Not Found
+  /courses/{id}/subjects/{subId}:
+    get:
+      tags:
+        - Subject
+      summary: Finds a subject by Id
+      operationId: getSubject
+      parameters:
+        - name: id
+          in: path
+          description: ID of the course
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: subId
+          in: path
+          description: ID of the subject
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/SubjectBody'
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Subject
+      summary: Update an existing subject
+      description: Update an existing subject by Id
+      operationId: editSubject
+      parameters:
+        - name: id
+          in: path
+          description: ID of the course
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: subId
+          in: path
+          description: ID of the subject
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectBody'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectBody'
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Subject
+      summary: Deletes a subject
+      description: Subject {subId} from Course {id} deleted successfully
+      operationId: deleteSubject
+      parameters:
+        - name: id
+          in: path
+          description: ID of the course
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: subId
+          in: path
+          description: ID of the subject
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Not Found
+  /students/create:
+    post:
+      tags:
+        - Student
+      summary: Add a new student
+      description: Add a new student to the university DB
+      operationId: addStudent
+      requestBody:
+        description: Add a new student to the university DB
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentBody'
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentBody'
+  /students/all:
+    get:
+      tags:
+        - Student
+      summary: Finds all students
+      operationId: getAllStudents
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentBody'
+  /students/{stuId}:
+    get:
+      tags:
+        - Student
+      summary: Finds a student by Id
+      operationId: getStudent
+      parameters:
+        - name: stuId
+          in: path
+          description: ID of the student to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/StudentBody'
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Student
+      summary: Update an existing student
+      description: Update an existing student by Id
+      operationId: editStudent
+      parameters:
+        - name: stuId
+          in: path
+          description: ID of the student to edit
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentBody'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentBody'
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Student
+      summary: Deletes a student
+      description: Student {id} deleted successfully
+      operationId: deleteStudent
+      parameters:
+        - name: stuId
+          in: path
+          description: ID of the student to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Not Found
+  /registration/student-to-subject:
+    post:
+      tags:
+        - Enrollment
+      summary: Add a student to a subject
+      operationId: registerStudentInSubject
+      parameters:
+        - name: stuId
+          in: query
+          description: ID of the student to add
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: subId
+          in: query
+          description: ID of the subject
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Not Found
+components:
+  schemas:
+    CourseBody:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 2
+        courseName:
+          type: string
+          example: "Curso de Fisica"
+        programs:
+          type: array
+          items:
+            type: string
+            example: ["Ingenieria de Sistemas", "Ingenieria Telematica", "Ingenieria Industrial"]
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectBody'
+    SubjectBody:
+      type: object
+      properties:
+        id:
+          type: number
+          example: null
+        name:
+          type: string
+          example: "Fisica y Laboratorio I"
+        schedule:
+          type: string
+          example: "MAR - JUE 2:00PM"
+        professor:
+          type: string
+          example: "Maria Elena"
+        credits:
+          type: integer
+          format: int64
+          example: 4
+        course:
+          type: object
+          example: null
+        students:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentBody'
+          example: []
+    StudentBody:
+      type: object
+      properties:
+        id:
+          type: number
+          example: null
+        firstName:
+          type: string
+          example: "Mayumi"
+        lastName:
+          type: string
+          example: "Tamura"
+        program:
+          type: string
+          example: "Ingenieria de Sistemas"
+        average:
+          type: number
+          example: 4.0
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectBody'
+          example: []

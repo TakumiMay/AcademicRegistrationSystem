@@ -19,32 +19,35 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping("/create")
+    @Operation(summary ="Add a new student")
     public ResponseEntity<StudentDto> addStudent(@Valid @RequestBody StudentDto studentDto){
         return new ResponseEntity<StudentDto>(studentService.addStudent(studentDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/all")
     @Operation(summary ="Obtain all the students")
-    public ResponseEntity<List<StudentDto>> getAll() {
+    public ResponseEntity<List<StudentDto>> getAllStudents() {
         return ResponseEntity.ok(studentService.getAll());
     }
 
     @GetMapping("/{stuId}")
+    @Operation(summary ="Obtain a student given its id")
     public ResponseEntity<StudentDto> getStudent(@PathVariable("stuId") Long stuId) {
         return studentService.getStudentById(stuId).map(studentDto -> new ResponseEntity<>(studentDto, HttpStatus.OK)).
                 orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{stuId}")
+    @Operation(summary ="Edit a student given its id and data")
     public ResponseEntity<StudentDto> editStudent(@PathVariable("stuId") Long stuId, @Valid @RequestBody StudentDto studentDto) {
-        return studentService.editStudent(stuId).map(stuDto -> new ResponseEntity<>(stuDto, HttpStatus.ACCEPTED)).
+        return studentService.editStudent(stuId, studentDto).map(stuDto -> new ResponseEntity<>(stuDto, HttpStatus.ACCEPTED)).
                 orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{stuId}")
-    public ResponseEntity<StudentDto> deleteStudent(@PathVariable("stuId") Long stuId) {
-        return studentService.deleteStudent(stuId).map(studentDto -> new ResponseEntity<>(studentDto, HttpStatus.OK)).
-                orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @Operation(summary ="Delete a student given its id")
+    public ResponseEntity<String> deleteStudent(@PathVariable("stuId") Long stuId) {
+        return (studentService.deleteStudent(stuId))?ResponseEntity.ok("Student "+ stuId +" deleted successfully."):new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

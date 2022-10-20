@@ -5,6 +5,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class Subject {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "first_name")
-    private List<Student> students;
+    private List<Student> students = new ArrayList<>();
 
     public Subject(){}
 

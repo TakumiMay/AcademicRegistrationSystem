@@ -1,5 +1,6 @@
 package com.university.academicRegistrationSystem.model.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StudentDto {
@@ -9,7 +10,7 @@ public class StudentDto {
     private String lastName;
     private String program;
     private Double average;
-    private List<SubjectDto> subjects;
+    private List<SubjectDto> subjects = new ArrayList<>();
 
     public StudentDto(Long id, String firstName, String lastName, String program, Double average) {
         this.id = id;

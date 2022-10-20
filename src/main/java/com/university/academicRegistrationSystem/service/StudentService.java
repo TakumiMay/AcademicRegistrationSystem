@@ -9,6 +9,6 @@ public interface StudentService {
     StudentDto addStudent(StudentDto studentDto);
     List<StudentDto> getAll();
     Optional<StudentDto> getStudentById(Long stuId);
-    Optional<StudentDto> editStudent(Long stuId);
-    Optional<StudentDto> deleteStudent(Long stuId);
+    Optional<StudentDto> editStudent(Long stuId, StudentDto studentDto);
+    boolean deleteStudent(Long stuId);
 }

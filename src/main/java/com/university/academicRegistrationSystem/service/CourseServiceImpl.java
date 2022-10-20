@@ -21,8 +21,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDto addCourse(CourseDto courseDto) {
         Course course = CourseMapper.toBO(courseDto);
-        course.setSubjects( courseDto.getSubjects().stream().map(SubjectMapper::toBO).collect(Collectors.toList()) );
-        course.getSubjects().forEach(subject -> subject.setCourse(course));
+        if(!courseDto.getSubjects().isEmpty()){
+            course.setSubjects(courseDto.getSubjects().stream().map(SubjectMapper::toBO).collect(Collectors.toList()));
+            course.getSubjects().forEach(subject -> subject.setCourse(course));
+        }
         return CourseMapper.toDto(courseRepository.save(course));
     }
 
@@ -39,7 +41,7 @@ public class CourseServiceImpl implements CourseService {
         return Optional.empty();
     }
 
-    @Override //TO DO
+    @Override
     public Optional<CourseDto> editCourse(Long id, CourseDto courseDto){
         Optional<Course> optionalCourse = courseRepository.findById(id);
         if(optionalCourse.isPresent())

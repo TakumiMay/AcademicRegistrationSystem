@@ -2,6 +2,7 @@ package com.university.academicRegistrationSystem.model.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ public class Course {
     private String[] programs;
 
     @OneToMany(mappedBy = "course", cascade= CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Subject> subjects;
+    private List<Subject> subjects = new ArrayList<>();
 
     public Course(){}
 
