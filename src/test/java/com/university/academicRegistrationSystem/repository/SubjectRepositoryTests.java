@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class SubjectRepositoryTests {
 
     @BeforeEach
     public void setUp(){
-        Course course = new Course(1L, "courseName", new String[]{"p1", "p2"});
+        Course course = new Course(null, "courseName", new String[]{"program1", "program2"});
         savedCourse = courseRepository.save(course);
         subject = new Subject(null, "subject1", "LUN - MIE 9:00AM", "professor1", 4);
         subject.setCourse(savedCourse);
@@ -45,55 +46,38 @@ public class SubjectRepositoryTests {
     }
 
     @Test
-    @DisplayName("JUnit test for find all Subjects operation")
-    public void givenSubjects_whenFindAll_thenReturnAllSubjects(){
-        Subject subject2 = new Subject(
-                null, "subject2", "MAR - JUE 9:00AM", "professor2", 4);
-        subject2.setCourse(savedCourse);
-        subjectRepository.save(subject);
-        subjectRepository.save(subject2);
+    @DisplayName("JUnit test for find all Subjects for a course operation")
+    public void givenSubjects_whenFindAllByCourseId_thenReturnSubjects() {
+        Subject subject2 = new Subject(null, "subject2", "MAR - JUE 9:00AM", "professor2", 4);
+        subject2.setCourse(this.savedCourse);
 
-        List<Subject> subjects = subjectRepository.findAll();
+        List<Subject> subjectsToSave = new ArrayList<>();
+        subjectsToSave.add(this.subject);
+        subjectsToSave.add(subject2);
+        subjectRepository.saveAll(subjectsToSave);
+
+        List<Subject> subjects = subjectRepository.findByCourseId(this.savedCourse.getId());
 
         assertThat(subjects).isNotNull();
         assertThat(subjects.size()).isEqualTo(2);
     }
 
     @Test
-    @DisplayName("JUnit test for find a Subject operation")
-    public void givenSubject_whenFindById_thenReturnSubject(){
-        subjectRepository.save(subject);
+    @DisplayName("JUnit test for find all by Course id and Subject id operation")
+    public void givenSubject_whenFindByCourseIdAndSubjectId_thenReturnSubject() {
+        subjectRepository.save(this.subject);
 
-        Subject subjectDB = subjectRepository.findById(1L).get();
-
-        assertThat(subjectDB).isNotNull();
-    }
-
-    @Test
-    @DisplayName("JUnit test for find all Subjects by Course id operation")
-    public void givenSubject_whenFindByCourseId_thenReturnSubjects(){
-        subjectRepository.save(subject);
-
-        List<Subject> subjects = subjectRepository.findByCourseId(savedCourse.getId());
+        List<Subject> subjects = subjectRepository.findByCourseId(this.savedCourse.getId());
+        Optional<Subject> subjectSaved = subjectRepository.findById(1L);
 
         assertThat(subjects).isNotNull();
-    }
-
-    @Test
-    @DisplayName("JUnit test for find a Subject operation")
-    public void givenSubject_whenFindStudentsBySubjectId_thenReturnStudents(){
-        subjectRepository.save(subject);
-
-        //TO DO
-        List<Subject> subjects = subjectRepository.findAll();
-
-        assertThat(subjects).isNotNull();
+        assertThat(subjects).contains(this.subject);
     }
 
     @Test
     @DisplayName("JUnit test for edit a Subject operation")
     public void givenSubject_whenEdit_thenReturnUpdatedSubject() {
-        subjectRepository.save(subject);
+        subjectRepository.save(this.subject);
 
         Subject savedSubject = subjectRepository.findById(subject.getId()).get();
         savedSubject.setName("anotherName");
@@ -105,7 +89,7 @@ public class SubjectRepositoryTests {
 
     @Test
     @DisplayName("JUnit test for delete a Subject operation")
-    public void givenSubject_whenDelete_thenRemoveSubject(){
+    public void givenSubject_whenDelete_thenRemoveSubject() {
         subjectRepository.save(subject);
 
         subjectRepository.delete(subject);

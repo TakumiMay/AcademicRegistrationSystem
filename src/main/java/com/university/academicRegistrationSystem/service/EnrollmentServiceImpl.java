@@ -38,10 +38,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public Optional<List<StudentDto>> getAllStudentsBySubject(Long subId) {
         Optional<Subject> subject = subjectRepository.findById(subId);
-        if(subject.isPresent()) {
-            return Optional.of( subjectRepository.findStudentsById(subId).stream().map(StudentMapper::toDto).collect(Collectors.toList()) );
-        }
-        return Optional.empty();
+        return subject.map(sub -> sub.getStudents().stream().map(StudentMapper::toDto).collect(Collectors.toList()));
     }
 
 }

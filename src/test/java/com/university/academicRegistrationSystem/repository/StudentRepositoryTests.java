@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class StudentRepositoryTests {
     @BeforeEach
     public void setUp() {
         student = new Student(
-                null, "firstName", "lastName", "program1", 1.0);
+                null, "firstName", "lastName", "program1", 5.0);
     }
 
     @Test
@@ -41,9 +42,12 @@ public class StudentRepositoryTests {
     @Test
     @DisplayName("JUnit test for find all Students operation")
     public void givenStudents_whenFindAll_thenReturnAllStudents(){
-        Student student2 = new Student(null, "firstName2", "lastName2", "program2", 2.0);
-        studentRepository.save(student);
-        studentRepository.save(student2);
+        Student student2 = new Student(null, "firstName2", "lastName2", "program2", 4.0);
+
+        List<Student> studentsToSave = new ArrayList<>();
+        studentsToSave.add(this.student);
+        studentsToSave.add(student2);
+        studentRepository.saveAll(studentsToSave);
 
         List<Student> students = studentRepository.findAll();
 
@@ -71,7 +75,7 @@ public class StudentRepositoryTests {
         Student editedStudent = studentRepository.save(savedStudent);
 
         assertThat(editedStudent.getFirstName()).isEqualTo("anotherName");
-        assertThat(editedStudent.getId()).isEqualTo(1L);
+        assertThat(editedStudent.getLastName()).isEqualTo("lastName");
     }
 
     @Test

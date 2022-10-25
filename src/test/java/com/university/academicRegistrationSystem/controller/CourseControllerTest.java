@@ -1,41 +1,43 @@
 package com.university.academicRegistrationSystem.controller;
 
-import com.university.academicRegistrationSystem.exceptionHandler.MyExceptionHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.university.academicRegistrationSystem.model.dto.CourseDto;
 import com.university.academicRegistrationSystem.service.CourseService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@SpringBootTest(classes = {CourseController.class, MyExceptionHandler.class})
-@ActiveProfiles("integration-test")
-@AutoConfigureMockMvc(addFilters = false)
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(CourseController.class)
 public class CourseControllerTest {
 
     private static final String BASE_PATH = "/courses";
 
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private MyExceptionHandler exceptionHandler;
-    @Autowired
-    private CourseController courseController;
     @MockBean
     private CourseService courseService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @BeforeEach
-    public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(courseController).setControllerAdvice(exceptionHandler)
-                .build();
-    }
+    @Test
+    public void shouldCreateCourse() throws Exception {
+        CourseDto course = new CourseDto(1L, "courseName", new String[]{"program1", "program2"});
 
-    //@Test
-    public void whenPostRequestToCoursesAndValidCourseThenCorrectResponse() {
-        //TO DO
+        when(courseService.addCourse(course)).thenReturn(course);
+
+        mockMvc.perform(post(BASE_PATH + "/create").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(course)))
+                .andExpect(status().isCreated())
+                .andDo(print());
     }
 
 }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,9 +21,9 @@ public class CourseRepositoryTests {
     private Course course;
 
     @BeforeEach
-    public void setUp(){
-        course = new Course(
-                1L, "courseName", new String[]{"p1", "p2"});
+    public void setUp() {
+        courseRepository.deleteAll();
+        course = new Course(null, "courseName", new String[]{"program1", "program2"});
     }
 
     @Test
@@ -35,15 +36,17 @@ public class CourseRepositoryTests {
 
         //Then - verify the output
         assertThat(savedCourse).isNotNull();
-        assertThat(savedCourse.getId()).isGreaterThan(0);
+        assertThat(savedCourse.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("JUnit test for find all Courses operation")
     public void givenCourses_whenFindAll_thenReturnAllCourses(){
-        Course course2 = new Course(1L, "courseName", new String[]{"p1", "p2"});
-        courseRepository.save(course);
-        courseRepository.save(course2);
+        Course course2 = new Course(null, "courseName", new String[]{"program1", "program2"});
+        List<Course> list = new ArrayList<>();
+        list.add(this.course);
+        list.add(course2);
+        courseRepository.saveAll(list);
 
         List<Course> courses = courseRepository.findAll();
 
@@ -56,7 +59,7 @@ public class CourseRepositoryTests {
     public void givenCourse_whenFindById_thenReturnCourse(){
         courseRepository.save(course);
 
-        Course courseDB = courseRepository.findById(1L).get();
+        Course courseDB = courseRepository.findById(course.getId()).get();
 
         assertThat(courseDB).isNotNull();
     }
@@ -67,11 +70,11 @@ public class CourseRepositoryTests {
         courseRepository.save(course);
 
         Course savedCourse = courseRepository.findById(course.getId()).get();
-        savedCourse.setCourseName("The courseName");
+        savedCourse.setPrograms(new String[]{"diff program1", "diff program2", "diff program3"});
         Course editedCourse = courseRepository.save(savedCourse);
 
-        assertThat(editedCourse.getCourseName()).isEqualTo("The courseName");
-        assertThat(editedCourse.getId()).isEqualTo(1L);
+        assertThat(editedCourse.getCourseName()).isEqualTo("courseName");
+        assertThat(editedCourse.getPrograms().length).isEqualTo(3);
     }
 
     @Test

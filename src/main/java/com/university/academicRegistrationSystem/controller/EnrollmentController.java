@@ -17,15 +17,15 @@ public class EnrollmentController {
     @Autowired
     private EnrollmentService enrollmentService;
 
-    @PostMapping("/student-to-subject")
+    @PostMapping("/student-to-subject/{subId}/{stuId}")
     @Operation(summary = "Add a student to a subject")
-    public ResponseEntity<String> registerStudentInSubject(@RequestParam Long stuId, @RequestParam Long subId) {
+    public ResponseEntity<String> registerStudentInSubject(@PathVariable("subId") Long subId, @PathVariable("stuId") Long stuId) {
         return (enrollmentService.enrollStudent(stuId, subId))?ResponseEntity.ok("Student with id "+ stuId +" successfully enrolled in subject "+ subId):new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/students-in subject")
+    @GetMapping("/students-in-subject/{subId}")
     @Operation(summary = "Obtain all students of a subject")
-    public ResponseEntity<List<StudentDto>> getStudentsBySubject(@RequestParam Long subId) {
+    public ResponseEntity<List<StudentDto>> getStudentsBySubject(@PathVariable("subId") Long subId) {
         return enrollmentService.getAllStudentsBySubject(subId).map(studentDto -> new ResponseEntity<>(studentDto, HttpStatus.OK)).
                 orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

@@ -1,36 +1,42 @@
 package com.university.academicRegistrationSystem.controller;
 
-import com.university.academicRegistrationSystem.exceptionHandler.MyExceptionHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.university.academicRegistrationSystem.model.dto.StudentDto;
 import com.university.academicRegistrationSystem.service.StudentService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@SpringBootTest(classes = {StudentController.class, MyExceptionHandler.class})
-@ActiveProfiles("integration-test")
-@AutoConfigureMockMvc(addFilters = false)
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(StudentController.class)
 public class StudentControllerTest {
 
     private static final String BASE_PATH = "/students";
 
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private MyExceptionHandler exceptionHandler;
-    @Autowired
-    private StudentController studentController;
     @MockBean
     private StudentService studentService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @BeforeEach
-    public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(studentController).setControllerAdvice(exceptionHandler)
-                .build();
+    @Test
+    public void shouldAddStudent() throws Exception {
+        StudentDto student = new StudentDto(1L, "firstName", "lastName", "program", 4.0);
+
+        when(studentService.addStudent(student)).thenReturn(student);
+
+        mockMvc.perform(post(BASE_PATH + "/create").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(student)))
+                .andExpect(status().isCreated())
+                .andDo(print());
     }
 
 
