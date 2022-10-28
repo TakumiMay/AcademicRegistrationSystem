@@ -6,14 +6,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@ActiveProfiles("integration-test")
 public class CourseRepositoryTests {
 
     @Autowired
@@ -23,7 +27,7 @@ public class CourseRepositoryTests {
     @BeforeEach
     public void setUp() {
         courseRepository.deleteAll();
-        course = new Course(null, "courseName", new String[]{"program1", "program2"});
+        course = new Course(null, "courseName", List.of("program1", "program2"));
     }
 
     @Test
@@ -42,7 +46,7 @@ public class CourseRepositoryTests {
     @Test
     @DisplayName("JUnit test for find all Courses operation")
     public void givenCourses_whenFindAll_thenReturnAllCourses(){
-        Course course2 = new Course(null, "courseName", new String[]{"program1", "program2"});
+        Course course2 = new Course(null, "courseName", List.of("program1", "program2"));
         List<Course> list = new ArrayList<>();
         list.add(this.course);
         list.add(course2);
@@ -70,11 +74,11 @@ public class CourseRepositoryTests {
         courseRepository.save(course);
 
         Course savedCourse = courseRepository.findById(course.getId()).get();
-        savedCourse.setPrograms(new String[]{"diff program1", "diff program2", "diff program3"});
+        savedCourse.setPrograms(new ArrayList(Arrays.asList("diff program1", "diff program2", "diff program3")));
         Course editedCourse = courseRepository.save(savedCourse);
 
         assertThat(editedCourse.getCourseName()).isEqualTo("courseName");
-        assertThat(editedCourse.getPrograms().length).isEqualTo(3);
+        assertThat(editedCourse.getPrograms().size()).isEqualTo(3);
     }
 
     @Test

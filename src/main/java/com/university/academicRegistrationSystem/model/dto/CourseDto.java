@@ -8,10 +8,10 @@ public class CourseDto {
 
     private Long id;
     private String courseName;
-    private String[] programs;
+    private List<String> programs;
     private List<SubjectDto> subjects = new ArrayList<>();
 
-    public CourseDto(Long id, String courseName, String[] programs) {
+    public CourseDto(Long id, String courseName, List<String> programs) {
         this.id = id;
         this.courseName = courseName;
         this.programs = programs;
@@ -33,11 +33,11 @@ public class CourseDto {
         this.courseName = courseName;
     }
 
-    public String[] getPrograms() {
+    public List<String> getPrograms() {
         return programs;
     }
 
-    public void setPrograms(String[] programs) {
+    public void setPrograms(List<String> programs) {
         this.programs = programs;
     }
 

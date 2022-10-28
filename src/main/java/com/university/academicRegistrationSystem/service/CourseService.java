@@ -10,5 +10,5 @@ public interface CourseService {
     List<CourseDto> getAll();
     Optional<CourseDto> getCourseById(Long id);
     Optional<CourseDto> editCourse(Long id, CourseDto courseDto);
-    boolean deleteCourse(Long id);
+    void deleteCourse(Long id);
 }

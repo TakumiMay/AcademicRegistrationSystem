@@ -33,12 +33,17 @@ public class SubjectServiceImpl implements SubjectService {
             courseRepository.save(course.get());
             return Optional.of(subjectDto);
         }
-        return Optional.empty();
+        throw new RuntimeException("The course id does not exist");
     }
 
     @Override
     public Optional<List<SubjectDto>> getAllByCourse(Long id) {
-        return Optional.of(subjectRepository.findByCourseId(id).stream().map(SubjectMapper::toDto).collect(Collectors.toList()));
+        Optional<Course> course = courseRepository.findById(id);
+        if(course.isPresent()) {
+            return Optional.of(subjectRepository.findByCourseId(id).stream()
+                    .map(SubjectMapper::toDto).collect(Collectors.toList()));
+        }
+        throw new RuntimeException("The course id does not exist");
     }
 
     @Override
@@ -69,22 +74,27 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public boolean deleteSubject(Long id, Long subId) {
-        if(checkSubjectInCourse(id, subId)) {
-            Optional<Subject> optionalSubject = subjectRepository.findById(subId);
-            subjectRepository.delete(optionalSubject.get());
-            return true;
-        }
-        return false;
+    public void deleteSubject(Long id, Long subId) {
+        subjectRepository.findById(subId)
+                .ifPresentOrElse(
+                        (subject) -> {
+                            if(checkSubjectInCourse(id, subId))
+                                subjectRepository.delete(subject);
+                        },
+                        () -> {
+                            throw new RuntimeException("The subject to delete does not exist");
+                        }
+                );
     }
 
-    public boolean checkSubjectInCourse(Long id, Long subId) {//Usar filter o reduce
-        List<SubjectDto> subjects = subjectRepository.findByCourseId(id).stream().map(SubjectMapper::toDto).collect(Collectors.toList());
-        for (SubjectDto subject:subjects) {
-            if(Objects.equals(subject.getId(), subId))
-                return true;
-        }
-        return false;
+    public boolean checkSubjectInCourse(Long id, Long subId) {
+        List<SubjectDto> subjects = subjectRepository.findByCourseId(id).stream()
+                .map(SubjectMapper::toDto)
+                .filter(subjectDto -> Objects.equals(subjectDto.getId(), subId))
+                .collect(Collectors.toList());
+        if(subjects.size()==1 && subjects.get(0).getId()==subId)
+            return true;
+        throw new RuntimeException("The subject to does not belong to course");
     }
 
 }

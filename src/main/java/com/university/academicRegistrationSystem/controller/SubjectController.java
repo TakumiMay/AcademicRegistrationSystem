@@ -49,7 +49,8 @@ public class SubjectController {
     @DeleteMapping("/{subId}")
     @Operation(summary = "Delete a subject of a course given the ids")
     public ResponseEntity<String> deleteSubject(@PathVariable("id") Long id, @PathVariable("subId") Long subId) {
-        return (subjectService.deleteSubject(id, subId))?ResponseEntity.ok("Subject "+ subId +" from Course "+ id +" deleted successfully."):new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        subjectService.deleteSubject(id, subId);
+        return ResponseEntity.ok("Subject "+ subId +" from Course "+ id +" deleted successfully.");
     }
 
 }

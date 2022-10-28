@@ -26,7 +26,7 @@ public class SubjectRepositoryTests {
 
     @BeforeEach
     public void setUp(){
-        Course course = new Course(null, "courseName", new String[]{"program1", "program2"});
+        Course course = new Course(null, "courseName", List.of("program1", "program2"));
         savedCourse = courseRepository.save(course);
         subject = new Subject(null, "subject1", "LUN - MIE 9:00AM", "professor1", 4);
         subject.setCourse(savedCourse);

@@ -25,20 +25,25 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public boolean enrollStudent(Long stuId, Long subId) {
         Optional<Student> student = studentRepository.findById(stuId);
         Optional<Subject> subject = subjectRepository.findById(subId);
-        if(student.isPresent() && subject.isPresent()) {
-            student.get().getSubjects().add(subject.get());
-            subject.get().getStudents().add(student.get());
-            studentRepository.save(student.get());
-            subjectRepository.save(subject.get());
-            return true;
+        if(student.isPresent()) {
+            if(subject.isPresent()) {
+                student.get().getSubjects().add(subject.get());
+                subject.get().getStudents().add(student.get());
+                studentRepository.save(student.get());
+                subjectRepository.save(subject.get());
+                return true;
+            }
+            throw new RuntimeException("The subject id does not exist");
         }
-        return false;
+        throw new RuntimeException("The student id does not exist");
     }
 
     @Override
     public Optional<List<StudentDto>> getAllStudentsBySubject(Long subId) {
         Optional<Subject> subject = subjectRepository.findById(subId);
-        return subject.map(sub -> sub.getStudents().stream().map(StudentMapper::toDto).collect(Collectors.toList()));
+        if(subject.isPresent())
+            return subject.map(sub -> sub.getStudents().stream().map(StudentMapper::toDto).collect(Collectors.toList()));
+        throw new RuntimeException("The subject id does not exist");
     }
 
 }

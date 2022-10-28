@@ -10,5 +10,5 @@ public interface StudentService {
     List<StudentDto> getAll();
     Optional<StudentDto> getStudentById(Long stuId);
     Optional<StudentDto> editStudent(Long stuId, StudentDto studentDto);
-    boolean deleteStudent(Long stuId);
+    void deleteStudent(Long stuId);
 }

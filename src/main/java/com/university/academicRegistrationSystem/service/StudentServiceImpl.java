@@ -48,13 +48,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public boolean deleteStudent(Long stuId) {
-        Optional<Student> optionalStudent = studentRepository.findById(stuId);
-        if (optionalStudent.isPresent()) {
-            studentRepository.delete(optionalStudent.get());
-            return true;
-        }
-        return false;
+    public void deleteStudent(Long stuId) {
+        studentRepository.findById(stuId)
+                .ifPresentOrElse(
+                        student -> studentRepository.delete(student),
+                        () -> {throw new RuntimeException("The student to delete by id does not exist");}
+                );
     }
 
 }

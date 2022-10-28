@@ -24,7 +24,7 @@ public class Subject {
     @Max(10)
     private int credits;
 
-    @ManyToOne(fetch = FetchType.EAGER, targetEntity = Course.class)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, targetEntity = Course.class)
     @JoinColumn(name = "course_id", nullable = false, updatable = false, insertable = true)
     private Course course;
 

@@ -50,13 +50,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public boolean deleteCourse(Long id) {
-        Optional<Course> optionalCourse = courseRepository.findById(id);
-        if(optionalCourse.isPresent()) {
-            courseRepository.delete(optionalCourse.get());
-            return true;
-        }
-        return false;
+    public void deleteCourse(Long id) {
+        courseRepository.findById(id)
+                .ifPresentOrElse(
+                        course -> courseRepository.delete(course),
+                        () -> {throw new RuntimeException("The course to delete by id does not exist");}
+                );
     }
 
 }

@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SubjectServiceTests {
@@ -38,7 +39,7 @@ public class SubjectServiceTests {
 
     @Test
     public void shouldAddSubject() {
-        Course course = new Course(1L, "courseName", new String[]{"program1", "program2"});
+        Course course = new Course(1L, "courseName", List.of("program1", "program2"));
 
         when(subjectRepository.save(subject)).thenReturn(subject);
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
@@ -98,8 +99,19 @@ public class SubjectServiceTests {
     }
 
     @Test
-    public void shouldNotGetSubjectById() {
+    public void shouldNotGetSubjectByIdForWrongCourseId() {
         when(subjectRepository.findByCourseId(1L)).thenReturn(List.of());
+
+        assertThatThrownBy(() -> {
+            subjectService.getSubjectById(1L, 1L);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The subject to does not belong to course");
+    }
+
+    @Test
+    public void shouldNotGetSubjectByIdForWrongId() {
+        when(subjectRepository.findByCourseId(1L)).thenReturn(List.of(subject));
+        when(subjectRepository.findById(1L)).thenReturn(Optional.empty());
 
         Optional<SubjectDto> optionalSubjectDto = subjectService.getSubjectById(1L, 1L);
 
@@ -118,13 +130,44 @@ public class SubjectServiceTests {
     }
 
     @Test
+    public void shouldNotEditSubjectForWrongCourseId() {
+        when(subjectRepository.findByCourseId(1L)).thenReturn(List.of());
+
+        assertThatThrownBy(() -> {
+            subjectService.editSubject(1L, 1L, SubjectMapper.toDto(subject));
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The subject to does not belong to course");
+    }
+
+    @Test
     public void shouldDeleteSubject() {
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
         when(subjectRepository.findByCourseId(1L)).thenReturn(List.of(subject));
 
-        boolean deleted = subjectService.deleteSubject(1L, 1L);
+        subjectService.deleteSubject(1L, 1L);
 
-        assertThat(deleted).isTrue();
+        verify(subjectRepository, times(1)).delete(subject);
+    }
+
+    @Test
+    public void shouldNotDeleteSubjectForWrongCourseId() {
+        when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
+        when(subjectRepository.findByCourseId(1L)).thenReturn(List.of());
+
+        assertThatThrownBy(() -> {
+            subjectService.deleteSubject(1L, 1L);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The subject to does not belong to course");
+    }
+
+    @Test
+    public void shouldNotDeleteSubjectForWrongId() {
+        when(subjectRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            subjectService.deleteSubject(1L, 1L);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The subject to delete does not exist");
     }
 
 }

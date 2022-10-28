@@ -2,6 +2,8 @@ package com.university.academicRegistrationSystem.model.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,14 +16,16 @@ public class Course {
     private Long id;
     @NotBlank(message = "Course name is mandatory")
     private String courseName;
-    private String[] programs;
+    @ElementCollection
+    @Size(message = "Course must have at least one program")
+    private List<String> programs;
 
     @OneToMany(mappedBy = "course", cascade= CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Subject> subjects = new ArrayList<>();
 
     public Course(){}
 
-    public Course(Long id, String courseName, String[] programs) {
+    public Course(Long id, String courseName, List<String> programs) {
         this.id = id;
         this.courseName = courseName;
         this.programs = programs;
@@ -43,11 +47,11 @@ public class Course {
         this.courseName = courseName;
     }
 
-    public String[] getPrograms() {
+    public List<String> getPrograms() {
         return programs;
     }
 
-    public void setPrograms(String[] programs) {
+    public void setPrograms(List<String> programs) {
         this.programs = programs;
     }
 

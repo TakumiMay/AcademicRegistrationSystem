@@ -15,9 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.as;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTests {
@@ -133,18 +132,19 @@ public class StudentServiceTests {
 
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
 
-        boolean deleted = studentService.deleteStudent(1L);
+        studentService.deleteStudent(1L);
 
-        assertThat(deleted).isTrue();
+        verify(studentRepository, times(1)).delete(student);
     }
 
     @Test
     public void shouldNotDeleteStudent() {
         when(studentRepository.findById(1L)).thenReturn(Optional.empty());
 
-        boolean deleted = studentService.deleteStudent(1L);
-
-        assertThat(deleted).isFalse();
+        assertThatThrownBy(() -> {
+            studentService.deleteStudent(1L);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The student to delete by id does not exist");
     }
 
 }

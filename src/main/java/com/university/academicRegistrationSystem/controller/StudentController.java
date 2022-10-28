@@ -47,7 +47,8 @@ public class StudentController {
     @DeleteMapping("/{stuId}")
     @Operation(summary ="Delete a student given its id")
     public ResponseEntity<String> deleteStudent(@PathVariable("stuId") Long stuId) {
-        return (studentService.deleteStudent(stuId))?ResponseEntity.ok("Student "+ stuId +" deleted successfully."):new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        studentService.deleteStudent(stuId);
+        return ResponseEntity.ok("Student "+ stuId +" deleted successfully.");
     }
 
 }

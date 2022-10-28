@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CourseServiceTests {
@@ -27,7 +28,7 @@ public class CourseServiceTests {
 
     @Test
     public void shouldAddCourse() {
-        Course course = new Course(1L, "courseName", new String[]{"program1", "program2"});
+        Course course = new Course(1L, "courseName", List.of("program1", "program2"));
 
         when(courseRepository.save(course)).thenReturn(course);
 
@@ -52,8 +53,8 @@ public class CourseServiceTests {
 
     @Test
     public void shouldGetAllCourses() {
-        Course course = new Course(1L, "courseName", new String[]{"program1", "program2"});
-        Course course2 = new Course(2L, "courseName2", new String[]{"program2", "program3"});
+        Course course = new Course(1L, "courseName", List.of("program1", "program2"));
+        Course course2 = new Course(2L, "courseName2", List.of("program2", "program3"));
         List<Course> courses = List.of(course, course2);
 
         when(courseRepository.findAll()).thenReturn(courses);
@@ -78,7 +79,7 @@ public class CourseServiceTests {
 
     @Test
     public void shouldGetCourseById() {
-        Course course = new Course(1L, "courseName", new String[]{"program1", "program2"});
+        Course course = new Course(1L, "courseName", List.of("program1", "program2"));
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
@@ -99,7 +100,7 @@ public class CourseServiceTests {
 
     @Test
     public void shouldEditCourse() {
-        Course course = new Course(1L, "courseName", new String[]{"program1", "program2"});
+        Course course = new Course(1L, "courseName", List.of("program1", "program2"));
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(courseRepository.save(course)).thenReturn(course);
@@ -112,7 +113,7 @@ public class CourseServiceTests {
 
     @Test
     public void shouldNotEditCourse() {
-        Course course = new Course(1L, "courseName", new String[]{"program1", "program2"});
+        Course course = new Course(1L, "courseName", List.of("program1", "program2"));
 
         when(courseRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -123,22 +124,23 @@ public class CourseServiceTests {
 
     @Test
     public void shouldDeleteCourse() {
-        Course course = new Course(1L, "courseName", new String[]{"program1", "program2"});
+        Course course = new Course(1L, "courseName", List.of("program1", "program2"));
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
-        boolean deleted = courseService.deleteCourse(1L);
+        courseService.deleteCourse(1L);
 
-        assertThat(deleted).isTrue();
+        verify(courseRepository, times(1)).delete(course);
     }
 
     @Test
     public void shouldNotDeleteCourse() {
         when(courseRepository.findById(1L)).thenReturn(Optional.empty());
 
-        boolean deleted = courseService.deleteCourse(1L);
-
-        assertThat(deleted).isFalse();
+        assertThatThrownBy(() -> {
+                courseService.deleteCourse(1L);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The course to delete by id does not exist");
     }
 
 }
