@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,15 +43,26 @@ public class EnrollmentServiceTests {
     }
 
     @Test
-    public void shouldNotEnrollStudent() {
+    public void shouldNotEnrollStudentWrongSubject() {
         Student student = new Student(1L, "firstName", "lastName", "program", 4.0);
 
         when(subjectRepository.findById(1L)).thenReturn(Optional.empty());
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
 
-        boolean response = enrollmentServiceImpl.enrollStudent(student.getId(), 1L);
+        assertThatThrownBy(() -> {
+            enrollmentServiceImpl.enrollStudent(student.getId(), 1L);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The subject id does not exist");
+    }
 
-        assertThat(response).isFalse();
+    @Test
+    public void shouldNotEnrollStudentNotSaved() {
+        when(studentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            enrollmentServiceImpl.enrollStudent(1L, 1L);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The student id does not exist");
     }
 
     @Test
@@ -85,9 +97,10 @@ public class EnrollmentServiceTests {
     public void shouldNotGetStudentsBySubjectNotFound() {
         when(subjectRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Optional<List<StudentDto>> optionalStudentDtoList = enrollmentServiceImpl.getAllStudentsBySubject(1L);
-
-        assertThat(optionalStudentDtoList).isEmpty();
+        assertThatThrownBy(() -> {
+            enrollmentServiceImpl.getAllStudentsBySubject(1L);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The subject id does not exist");
     }
 
 }

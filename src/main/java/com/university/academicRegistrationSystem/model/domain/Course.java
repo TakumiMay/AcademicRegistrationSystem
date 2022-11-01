@@ -20,6 +20,7 @@ public class Course {
     @Size(message = "Course must have at least one program")
     private List<String> programs;
 
+    @ElementCollection
     @OneToMany(mappedBy = "course", cascade= CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Subject> subjects = new ArrayList<>();
 

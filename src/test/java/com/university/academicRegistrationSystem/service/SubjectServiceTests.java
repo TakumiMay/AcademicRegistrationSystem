@@ -30,17 +30,18 @@ public class SubjectServiceTests {
     @InjectMocks
     private SubjectServiceImpl subjectService;
 
+    private Course course;
     private Subject subject;
 
     @BeforeEach
     public void setUp() {
+        this.course = new Course(1L, "courseName", List.of("program1", "program2"));
         this.subject = new Subject(1L, "subject1", "LUN - MIE 9:00AM", "professor1", 4);
+        this.subject.setCourse(course);
     }
 
     @Test
     public void shouldAddSubject() {
-        Course course = new Course(1L, "courseName", List.of("program1", "program2"));
-
         when(subjectRepository.save(subject)).thenReturn(subject);
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         Optional<SubjectDto> subjectDto = subjectService.addSubject(1L, SubjectMapper.toDto(subject));
@@ -52,11 +53,13 @@ public class SubjectServiceTests {
 
     @Test
     public void shouldNotAddSubject() {
-        Subject subject2 = new Subject();
+        SubjectDto subjectDto = new SubjectDto(1L, null, null, null, 0);
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
-        Optional<SubjectDto> subjectDto = subjectService.addSubject(1L, SubjectMapper.toDto(subject2));
-
-        assertThat(subjectDto).isEmpty();
+        assertThatThrownBy(() -> {
+            subjectService.addSubject(1L, subjectDto);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("The subject fields can not be null");
     }
 
         @Test
@@ -66,6 +69,7 @@ public class SubjectServiceTests {
         List<Subject> subjects = List.of(subject, subject2, subject3);
 
         when(subjectRepository.findByCourseId(1L)).thenReturn(subjects);
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         List<SubjectDto> subjectDtoList = subjectService.getAllByCourse(1L).get();
 
         assertThat(subjectDtoList).isNotNull();
@@ -80,6 +84,7 @@ public class SubjectServiceTests {
         List<Subject> subjects = List.of();
 
         when(subjectRepository.findByCourseId(1L)).thenReturn(subjects);
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         List<SubjectDto> subjectDtoList = subjectService.getAllByCourse(1L).get();
 
         assertThat(subjectDtoList).isNotNull();

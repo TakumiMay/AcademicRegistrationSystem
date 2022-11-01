@@ -18,14 +18,13 @@ public class Subject {
     @NotBlank(message = "Subject name is mandatory")
     private String name;
     private String schedule;
-
     private String professor;
     @Min(0)
     @Max(10)
     private int credits;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, targetEntity = Course.class)
-    @JoinColumn(name = "course_id", nullable = false, updatable = false, insertable = true)
+    @JoinColumn(name = "course_id", nullable = false, updatable = false)
     private Course course;
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -24,16 +24,19 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public Optional<SubjectDto> addSubject(Long id, SubjectDto subjectDto){
-        Subject subject = SubjectMapper.toBO(subjectDto);
-        Optional<Course> course = courseRepository.findById(id);
-        if(course.isPresent()) {
-            subject.setCourse(course.get());
-            course.get().getSubjects().add(subject);
-            subjectRepository.save(subject);
-            courseRepository.save(course.get());
-            return Optional.of(subjectDto);
+        try {
+            Subject subject = SubjectMapper.toBO(subjectDto);
+            Optional<Course> course = courseRepository.findById(id);
+            if(course.isPresent()) {
+                subject.setCourse(course.get());
+                course.get().getSubjects().add(subject);
+                courseRepository.save(course.get());
+                return Optional.of(SubjectMapper.toDto( subjectRepository.save(subject) ));
+            }
+            throw new RuntimeException("The course id does not exist");
+        } catch (NullPointerException exception) {
+            throw new RuntimeException("The subject fields can not be null");
         }
-        throw new RuntimeException("The course id does not exist");
     }
 
     @Override

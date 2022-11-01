@@ -21,3 +21,10 @@ services:
       - "80:80"
     depends_on:
       - postgres
+  app:
+    build: .
+    image: app-img
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
