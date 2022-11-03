@@ -1,0 +1,34 @@
+version: "2"
+
+services:
+  app:
+    image: 'academicregistrationsystem:latest'
+    build:
+      context: .
+    container_name: app
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/universityDB
+    ports:
+      - "8080:8080"
+  postgres:
+    image: postgres
+    container_name: db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=universityDB
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "password"
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
